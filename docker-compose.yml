@@ -1,0 +1,37 @@
+version: '3'
+volumes:
+  db-volume: # 追記
+services:
+  mysql:
+    image: mysql:5.7.30
+    container_name: sandbox-docker-compose-mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_DATABASE: sandbox-docker-compose-mysql
+    ports:
+    - 13306:3306
+    volumes:
+      - db-volume:/var/lib/mysql
+  app:
+    # コンテナ名
+    container_name: sandbox-docker-compose-app-container
+    # イメージ名
+    image: sandbox-docker-compose-app-image
+    # ビルドに使用するDockerfileがあるディレクトリ指定
+    build: .
+    # マウントディレクトリ指定
+    volumes:
+      - .:/go/src/github.com/taisa831/sandbox-docker-compose-go
+    ports:
+      - "8002:8002"
+    entrypoint:
+      # mysqlが立ち上がるまで待つ
+      - dockerize
+      - -wait
+      - tcp://mysql:3306
+    command: ["/opt/sandbox-docker-compose-go/app"]
+    restart: always
+    depends_on:
+      - mysql
