@@ -25,13 +25,14 @@ services:
     volumes:
       - .:/go/src/github.com/taisa831/sandbox-docker-compose-go
     ports:
-      - "8002:8002"
+      - "8000:8000"
     entrypoint:
       # mysqlが立ち上がるまで待つ
       - dockerize
       - -wait
       - tcp://mysql:3306
     command: ["/opt/sandbox-docker-compose-go/app"]
+#    command: ["go", "run", "main.go"]
     restart: always
     depends_on:
       - mysql
